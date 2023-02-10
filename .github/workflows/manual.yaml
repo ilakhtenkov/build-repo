@@ -1,6 +1,6 @@
 name: Build
-permissions: write-all
-  #actions: write
+permissions:
+  actions: write
 on:
   workflow_dispatch:
 jobs:
