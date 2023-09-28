@@ -1,0 +1,56 @@
+name: Release pipeline
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+  release_preparation:
+    if: false
+    #if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Trigget SDLC controls here
+        run: |
+          echo "New tag pushed to main line: ${{ github.ref }}"
+          echo Deploying to prod
+          # Add your build or deployment commands here
+
+
+  
+  release:
+    if: false
+    #if: github.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Preparation
+        id: is_tag
+        run: |
+          if [[ -z "$(git tag --points-at HEAD)"]];then
+            echo is_tag=false >> $GITHUB_OUTPUT
+          else
+            echo is_tag=true >> $GITHUB_OUTPUT
+          fi
+      - name: Create Release
+        if: steps.is_tag.outputs.is_tag == 'true'
+        run: |
+          gh release create $(git tag --points-at HEAD) \
+           --title "Release Title"
+           --notes "Release Notes"
+           --prerelease --verify-tag
