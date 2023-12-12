@@ -1,7 +1,14 @@
 name: Matrix
 
+run-name: Matrix | apply ${{ inputs.apply }}
+
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: Should be applied?
+        type: boolean
+        default: true
 jobs:
   plan:
     runs-on: ubuntu-latest
@@ -54,6 +61,11 @@ jobs:
 
   apply:
     runs-on: ubuntu-latest
+    if: >-
+      (
+        github.event_name == 'push' && !(needs.prepare-apply.outputs.apply-matrix == '[]') ||
+        github.event_name == 'workflow_dispatch' && inputs.apply && !(needs.prepare-apply.outputs.apply-matrix == '[]')
+      )
     needs: prepare-apply
     strategy:
       matrix:
