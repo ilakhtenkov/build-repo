@@ -1,7 +1,14 @@
 name: Matrix
 
+run-name: Matrix | apply ${{ inputs.apply }}
+
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: Should be applied?
+        type: boolean
+        default: true
 jobs:
   plan:
     runs-on: ubuntu-latest
@@ -14,50 +21,59 @@ jobs:
           echo "planning ${{ matrix.region }}"
           if [[ "${{ matrix.region }}" == "de" ]]; then
             echo "Plan result: 1"
-            echo "plan_result_${{ matrix.region }}=1" > $GITHUB_OUTPUT
+            echo "plan_result_${{ matrix.region }}=''" > $GITHUB_OUTPUT
           else
             echo "Plan result: 0"
-            echo "plan_result_${{ matrix.region }}=0" > $GITHUB_OUTPUT
+            echo "plan_result_${{ matrix.region }}=${{ matrix.region }}" > $GITHUB_OUTPUT
           fi
         id: plan
     outputs:
-      result_de: ${{ steps.plan.outputs[format('plan_result_{0}', 'de')] }}
-      result_apac: ${{ steps.plan.outputs[format('plan_result_{0}', 'apac')] }}
-      result_us: ${{ steps.plan.outputs[format('plan_result_{0}', 'us')] }}
-  
-  prepare-apply:
+      result: ${{ join(steps.plan.outputs.*, ', ') }}
+  debug:
     runs-on: ubuntu-latest
     needs: plan
     steps:
-    - run: |
-        apply_required=()
-        if (( ${{ needs.plan.outputs.result_de }} == 0 )); then
-          echo "Adding de"
-          apply_required+=("de")
-        fi
-        if (( ${{ needs.plan.outputs.result_apac }} == 0 )); then
-          echo "Adding apac"
-          apply_required+=("apac")
-        fi
-        if (( ${{ needs.plan.outputs.result_us }} == 0 )); then
-          echo "Adding us"
-          apply_required+=("us")
-        fi
-        apply_required_string=$(jq --compact-output --null-input '$ARGS.positional' --args -- "${apply_required[@]}")
-        quoted_apply_required_string="'$apply_required_string'"
-        echo ${quoted_apply_required_string}
-        echo "apply-matrix=${apply_required_string}" > $GITHUB_OUTPUT
-      id: check-what-to-apply
-      shell: bash
-    outputs:
-      apply-matrix: ${{ steps.check-what-to-apply.outputs.apply-matrix }}
+      - run: echo "Debug ${{needs.plan.outputs.result}}"
+#  prepare-apply:
+#    runs-on: ubuntu-latest
+#    needs: plan
+#    steps:
+#    - run: |
+#        apply_required=()
+#        if (( ${{ needs.plan.outputs.result_de }} == 0 )); then
+#          echo "Adding de"
+#          apply_required+=("de")
+#        fi
+#        if (( ${{ needs.plan.outputs.result_apac }} == 0 )); then
+#          echo "Adding apac"
+#          apply_required+=("apac")
+#        fi
+#        if (( ${{ needs.plan.outputs.result_us }} == 0 )); then
+#          echo "Adding us"
+#          apply_required+=("us")
+#        fi
+#        apply_required_string=$(jq --compact-output --null-input '$ARGS.positional' --args -- "${apply_required[@]}")
+#        quoted_apply_required_string="'$apply_required_string'"
+#        echo ${quoted_apply_required_string}
+#        echo "apply-matrix=${apply_required_string}" > $GITHUB_OUTPUT
+#      id: check-what-to-apply
+#      shell: bash
+#    outputs:
+#      apply-matrix: ${{ steps.check-what-to-apply.outputs.apply-matrix }}
 
   apply:
     runs-on: ubuntu-latest
-    needs: prepare-apply
+    if: >-
+      (
+        github.event_name == 'push' && !(needs.plan.outputs.result == '[]') ||
+        github.event_name == 'workflow_dispatch' && inputs.apply && !(needs.plan.outputs.result == '[]')
+      )
+    #needs: prepare-apply
+    needs: plan
     strategy:
       matrix:
-        region: ${{ fromJSON(needs.prepare-apply.outputs.apply-matrix) }}
+        #region: ${{ fromJSON(needs.prepare-apply.outputs.apply-matrix) }}
+        region: ${{ fromJSON(needs.plan.outputs.result) }}
     steps:
     - run: echo "${{ matrix.region }}"
     
