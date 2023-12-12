@@ -1,0 +1,54 @@
+name: Matrix
+
+on:
+  workflow_dispatch: {}
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        region: ${{ fromJSON('["de", "apac", "us"]') }}
+    steps:
+      - name: plan
+        run: |
+          echo "planning ${region}"
+          if [ ${region} == "1"]; than
+            echo "plan_result=1" > $GITHUB_OUTPUT
+          else
+            echo "plan_result=0" > $GITHUB_OUTPUT
+          fi
+        id: plan
+    outputs:
+      result_de: ${{ matrix.region == 'de' && steps.plan.outputs.plan_result || 1 }}
+      result_apac: ${{ matrix.region == 'apac' && steps.plan.outputs.plan_result || 1 }}
+      result_us: ${{ matrix.region == 'us' && steps.plan.outputs.plan_result || 1 }}
+  
+  prepare-apply:
+    runs-on: ubuntu-latest
+    needs: plan
+    steps:
+    - run: |
+        apply_required=()
+        if [[ ${{ needs.plan.outputs.result_de }} == 0 ]]; than
+          apply_required=+("de")
+        elif [[ ${{ needs.plan.outputs.result_apac }} == 0 ]]; than
+          apply_required=+("apac")
+        elif [[ ${{ needs.plan.outputs.result_us }} == 0 ]]; than
+          apply_required=+("us")
+        fi
+        echo ${apply_required}
+        echo "apply-matrix=${apply_required}" > $GITHUB_OUTPUT
+      id: check-what-to-apply
+      shell: bash
+    outputs:
+      apply-matrix: steps.check-what-to-apply.outputs.apply-matrix
+
+  apply:
+    runs-on: ubuntu-latest
+    needs: prepare_apply
+    strategy:
+      matrix:
+        region: ${{ fromJSON(needs.prepare-apply.outputs.apply-matrix) }}
+    steps:
+    - run: echo "applying ${region}"
+    
