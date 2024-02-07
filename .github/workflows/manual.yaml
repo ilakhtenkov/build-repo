@@ -1,6 +1,5 @@
 name: Build
-permissions:
-  actions: write
+
 on:
   workflow_dispatch: {}
 #  pull_request:
@@ -23,6 +22,15 @@ jobs:
       - name: build
         run: echo "image=nginx:1.26" >> $GITHUB_OUTPUT
         id: build
+#      - name: Trigger deploy
+#        env:
+#          GH_TOKEN: ${{ github.token }}
+#        run: |
+#          gh workflow run \
+#            --ref 'main' \
+#            --repo 'ilakhtenkov/deploy-repo' \
+#            --field 'deployImage=nginx:1.26' \
+#            manual.yaml
       - name: Trigger deploy
         uses: actions/github-script@v6
         with:
@@ -30,10 +38,11 @@ jobs:
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: "${{ github.repository_owner }}",
-              repo: 'deploy-repo',
-              workflow_id: 'manual.yaml',
+              repo: 'build-repo',
+              workflow_id: 'deploy.yaml',
               ref: 'main',
               inputs: {
-                deployImage: "${{ steps.build.outputs.image }}"
+                deployImage: "${{ steps.build.outputs.image }}",
+                environment: 'prd'
               },
             })

@@ -1,0 +1,29 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployImage:
+        type: string
+        required: true
+        description: Image to deploy
+      environment:
+        type: string
+        required: true
+        description: ENV to deploy
+
+jobs:
+  Build-Image:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environement }}
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: deploy
+        run: |
+          echo "Deploying ${{ inputs.deployImage }} to ${{ inputs.environment }}"
+          sleep 60
+        id: deploy
+
