@@ -13,9 +13,9 @@ on:
         description: ENV to deploy
 
 jobs:
-  Build-Image:
+  deploy:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environement }}
+    environment: ${{ github.event.inputs.environement }}
     steps:
       - name: Dump GitHub context
         env:
@@ -23,7 +23,7 @@ jobs:
         run: echo "$GITHUB_CONTEXT"
       - name: deploy
         run: |
-          echo "Deploying ${{ inputs.deployImage }} to ${{ inputs.environment }}"
+          echo "Deploying ${{ github.event.inputs.deployImage }} to ${{ github.event.inputs.environment }}"
           sleep 60
         id: deploy
 
