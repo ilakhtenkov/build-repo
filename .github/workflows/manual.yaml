@@ -2,13 +2,25 @@ name: Build
 permissions:
   actions: write
 on:
-  workflow_dispatch:
+  workflow_dispatch: {}
+  pull_reqests:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - closed
+    branches:
+      - main
 jobs:
   Build-Image:
     runs-on: ubuntu-latest
     steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
       - name: build
-        run: echo "::set-output name=image::nginx:1.26"
+        run: echo "image=nginx:1.26" >> $GITHUB_OUTPUT
         id: build
       - name: Trigger deploy
         uses: actions/github-script@v6
