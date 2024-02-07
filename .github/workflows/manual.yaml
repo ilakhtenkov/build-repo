@@ -3,7 +3,7 @@ permissions:
   actions: write
 on:
   workflow_dispatch: {}
-  pull_reqests:
+  pull_request:
     types:
       - opened
       - synchronize
