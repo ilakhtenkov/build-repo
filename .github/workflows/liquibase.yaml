@@ -11,45 +11,49 @@ jobs:
   liquibase:
     runs-on: ubuntu-latest
     container:
-      image: liquibase/liquibase:4.27-alpine
+      image: liquibase/liquibase:4.27
     steps:
       - uses: actions/checkout@v4
       - id: 'auth'
         uses: 'google-github-actions/auth@v2'
         with:
           workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
-          service_account: ${{ secrets.WIF_SA}}
+          service_account: ${{ secrets.WIF_SA }}
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v2'
         with:
           version: '>= 473.0.0'
       - name: Download Simba JDBC Driver
         run: |
-          apk update
-          apk add --allow-untrusted curl unzip
           curl -fsSL https://github.com/liquibase/liquibase-bigquery/releases/download/v4.27.0.1/liquibase-bigquery-4.27.0.1.jar -o ${LIQUIBASE_HOME}/lib/liquibase-bigquery.jar
-          curl -fsSL https://storage.googleapis.com/simba-bq-release/jdbc/SimbaJDBCDriverforGoogleBigQuery42_1.5.4.1008.zip -o /tmp/SimbaJDBCDriverforGoogleBigQuery42_1.5.4.1008.zip
-          unzip /tmp/SimbaJDBCDriverforGoogleBigQuery42_1.5.4.1008.zip -d ${LIQUIBASE_HOME}/lib "*.jar"
+          curl -fsSL https://github.com/ilakhtenkov/build-repo/releases/download/bin/SimbaJDBCDriverforGoogleBigQuery42_1.5.4.1008.tar.gz -o /tmp/SimbaJDBCDriverforGoogleBigQuery42_1.5.4.1008.tar.gz
+          cd ${LIQUIBASE_HOME}
+          tar -xzvf /tmp/SimbaJDBCDriverforGoogleBigQuery42_1.5.4.1008.tar.gz --strip-components=1 -C ${LIQUIBASE_HOME}/lib
       - name: Set up connection
         run: |
           cat <<EOF> liquibase.properties
             driver: com.simba.googlebigquery.jdbc.Driver
-            url: jdbc:bigquery://https://www.googleapis.com/bigquery/v2:443;\
-              ProjectId=${{ secrets.GCP_PROJECT_ID }};\
-              DefaultDataset=test;\
-              OAuthType=4;\
-              OAuthPvtKeyPath=${GOOGLE_APPLICATION_CREDENTIALS};
+            url: jdbc:bigquery://https://www.googleapis.com/bigquery/v2:443;ProjectId=${{ secrets.GCP_PROJECT_ID }};DefaultDataset=test;OAuthType=4;OAuthPvtKeyPath=${GOOGLE_APPLICATION_CREDENTIALS};SSLTrustStore=${JAVA_HOME}/lib/security/cacerts;SSLTrustStorePwd=changeit;Location=europe-west3
             logLevel: WARN
           EOF
       - name: 'Test connection'
         run: |
           cat <<EOF> changelog.sql
+            -- liquibase formatted sql
+
+            -- changeset igor:1
             CREATE TABLE test_table 
             (
               test_id INT, 
-              test_column INT, 
-              PRIMARY KEY (test_id)
+              test_column INT,
             )
+            -- changeset igor:2
+            ALTER TABLE test_table
+            ADD COLUMN new_nullalbe_column INT;
+            -- changeset igor:3
+            UPDATE test_table
+            SET new_nullalbe_column = 0
+            WHERE new_nullalbe_column IS NULL;
           EOF
           liquibase update --changelog-file=changelog.sql
           
