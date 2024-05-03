@@ -1,0 +1,56 @@
+name: Liquibase test
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  liquibase:
+    runs-on: ubuntu-latest
+    container:
+      image: liquibase/liquibase:4.27-alpine
+    steps:
+      - uses: actions/checkout@v4
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SA}}
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+        with:
+          version: '>= 473.0.0'
+      - name: Download Simba JDBC Driver
+        run: |
+          apk update
+          apk add --allow-untrusted curl unzip
+          curl -fsSL https://github.com/liquibase/liquibase-bigquery/releases/download/v4.27.0.1/liquibase-bigquery-4.27.0.1.jar -o ${LIQUIBASE_HOME}/lib/liquibase-bigquery.jar
+          curl -fsSL https://storage.googleapis.com/simba-bq-release/jdbc/SimbaJDBCDriverforGoogleBigQuery42_1.5.4.1008.zip -o /tmp/SimbaJDBCDriverforGoogleBigQuery42_1.5.4.1008.zip
+          unzip /tmp/SimbaJDBCDriverforGoogleBigQuery42_1.5.4.1008.zip -d ${LIQUIBASE_HOME}/lib "*.jar"
+      - name: Set up connection
+        run: |
+          cat <<EOF> liquibase.properties
+            driver: com.simba.googlebigquery.jdbc.Driver
+            url: jdbc:bigquery://https://www.googleapis.com/bigquery/v2:443;\
+              ProjectId=${{ secrets.GCP_PROJECT_ID }};\
+              DefaultDataset=test;\
+              OAuthType=4;\
+              OAuthPvtKeyPath=${GOOGLE_APPLICATION_CREDENTIALS};
+            logLevel: WARN
+          EOF
+      - name: 'Test connection'
+        run: |
+          cat <<EOF> changelog.sql
+            CREATE TABLE test_table 
+            (
+              test_id INT, 
+              test_column INT, 
+              PRIMARY KEY (test_id)
+            )
+          EOF
+          liquibase update --changelog-file=changelog.sql
+          
+          
