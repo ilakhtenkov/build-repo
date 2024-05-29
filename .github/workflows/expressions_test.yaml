@@ -31,7 +31,7 @@ jobs:
         echo ${GITHUB_CONTEXT} | jq .
     - name: 'Workflow commands'
       run: |
-        echo "::notice file={name},line={line},endLine={endLine},title={title}:: Showing context"
+        echo "::notice title='It is very important':: Showing context"
         # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-a-notice-message
     - name: 'If boolean'
       run: echo "version prefix is ${VERSION_PREFIX}"
