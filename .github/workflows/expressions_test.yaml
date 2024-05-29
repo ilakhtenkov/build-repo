@@ -1,6 +1,6 @@
-name: Test Exptessions
+name: GitHub Actions Capabilities test
 
-run-name: Test Exptessions
+run-name: GitHub Actions Capabilities test
 
 on:
   workflow_dispatch:
@@ -28,9 +28,12 @@ jobs:
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: |
-        echo "::notice:: Showing context" # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-a-notice-message
         echo ${GITHUB_CONTEXT} | jq .
-    - name: Version prefix
+    - name: 'Workflow commands'
+      run: |
+        echo "::notice file={name},line={line},endLine={endLine},title={title}:: Showing context"
+        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-a-notice-message
+    - name: 'If boolean'
       run: echo "version prefix is ${VERSION_PREFIX}"
     - name: Format
       run: |
