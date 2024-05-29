@@ -3,7 +3,12 @@ name: Test Exptessions
 run-name: Test Exptessions
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      is_snapshot:
+        type: boolean
+        description: Is it a snapshot build
+        default: true
 
 env:
   env: DEV
@@ -17,7 +22,7 @@ jobs:
     - name: Dump GitHub context
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo ${GITHUB_CONTEXT}
+      run: echo ${GITHUB_CONTEXT} | jq .
     - name: Format
       run: |
         echo ${{ format('{1}: {0} tiggered run on {1}.', github.actor, env.env) }}
