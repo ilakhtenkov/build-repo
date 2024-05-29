@@ -27,7 +27,9 @@ jobs:
     - name: Dump GitHub context
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo ${GITHUB_CONTEXT} | jq .
+      run: |
+        echo "::info:: Showing context"
+        echo ${GITHUB_CONTEXT} | jq .
     - name: Version prefix
       run: echo "version prefix is ${VERSION_PREFIX}"
     - name: Format
