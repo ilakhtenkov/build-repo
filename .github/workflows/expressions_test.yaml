@@ -29,7 +29,7 @@ jobs:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: echo ${GITHUB_CONTEXT} | jq .
     - name: Version prefix
-      run: echo "version prefix is "${VERSION_PREFIX}"
+      run: echo "version prefix is ${VERSION_PREFIX}"
     - name: Format
       run: |
         echo ${{ format('{1}: {0} tiggered run on {1}.', github.actor, env.env) }}
