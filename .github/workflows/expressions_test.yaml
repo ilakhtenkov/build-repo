@@ -14,7 +14,7 @@ env:
   env: DEV
   VERSION_PREFIX: >-
     ${{
-      inputs.is_snapshot == 'true' && 'SNAPSHOT' ||
+      inputs.is_snapshot == true && 'SNAPSHOT' ||
       '' 
     }}
 
