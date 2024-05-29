@@ -28,7 +28,7 @@ jobs:
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: |
-        echo "::info:: Showing context"
+        echo "::error:: Showing context"
         echo ${GITHUB_CONTEXT} | jq .
     - name: Version prefix
       run: echo "version prefix is ${VERSION_PREFIX}"
