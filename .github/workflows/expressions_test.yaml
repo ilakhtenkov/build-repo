@@ -25,7 +25,7 @@ jobs:
       env:
         IS_RELEASE_BUILD: "true"
       run: |
-        if [[ ${IS_RELEASE_BUILD} == "true" ]]; than
+        if [[ ${IS_RELEASE_BUILD} == "true" ]]; then
           SUFFIX=""
         else
           SUFFIX="-SNAPSHOT"
