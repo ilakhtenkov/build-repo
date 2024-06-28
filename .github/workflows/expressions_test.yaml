@@ -24,4 +24,4 @@ jobs:
     - name: IF
       env:
         IS_RELEASE_BUILD: "true"
-      run: echo ${{ env.IS_RELEASE_BUILD == 'true' && '' || 'SNAPSHOT' }}
+      run: echo ${{ env.IS_RELEASE_BUILD == 'true' || 'SNAPSHOT' && '' }}
