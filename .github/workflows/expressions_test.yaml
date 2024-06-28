@@ -24,4 +24,10 @@ jobs:
     - name: IF
       env:
         IS_RELEASE_BUILD: "true"
-      run: echo ${{ env.IS_RELEASE_BUILD == 'true' || 'SNAPSHOT' && '' }}
+      run: |
+        if [[ ${IS_RELEASE_BUILD} == "true" ]];
+          SUFFIX=""
+        else
+          SUFFIX="-SNAPSHOT"
+        fi
+        echo ${SUFFIX}
