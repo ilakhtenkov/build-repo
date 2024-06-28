@@ -21,3 +21,7 @@ jobs:
     - name: Format
       run: |
         echo ${{ format('{1}: {0} tiggered run on {1}.', github.actor, env.env) }}
+    - name: IF
+      env:
+        IS_RELEASE_BUILD: "true"
+      run: echo ${{ if env.IS_RELEASE_BUILD == 'true' && '' || 'SNAPSHOT' }}
