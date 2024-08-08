@@ -72,9 +72,8 @@ jobs:
                 core.warning("There are less than 2 releases in the repository.");
                 return;
               }
-              core.info(releases);
-              const preLastRelease = releases[1];
-              core.info("Pre-last release:", preLastRelease);
+              const preLastReleaseTag = releases[1].tag_name;
+              core.info("Pre-last release:${preLastReleaseTag}");
             } catch (error) {
               console.error("Error fetching pre-last release:", error);
             }
