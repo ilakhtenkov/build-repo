@@ -83,7 +83,7 @@ jobs:
             return preLastReleaseTag;
           }
 
-          function getFirstRepositoryCommit() {
+          async function getFirstRepositoryCommit() {
             const { owner, repo } = getOwnerAndRepo();
             const { data: commits } = await github.request('GET /repos/{owner}/{repo}/commits', {
               owner: owner,
