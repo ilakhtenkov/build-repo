@@ -78,7 +78,7 @@ jobs:
             } catch (error) {
               console.error("Error fetching pre-last release:", error);
             }
-            return preLastReleaseTag
+            return preLastReleaseTag;
           }
           
           function getOwnerAndRepo() {
