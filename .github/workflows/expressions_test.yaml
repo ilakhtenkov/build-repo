@@ -81,3 +81,5 @@ jobs:
             const [owner, repo] = repoUrl.split("/");
             return { owner, repo };
           }
+          
+          getPreLastRelease();
