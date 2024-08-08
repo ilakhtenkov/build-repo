@@ -74,11 +74,11 @@ jobs:
                 return;
               }
               const preLastReleaseTag = releases[1].tag_name;
-              core.info(preLastReleaseTag)
-              core.info("Pre-last release: ${preLastReleaseTag}");
+              core.info(`Pre-last release tag: ${preLastReleaseTag}`);
             } catch (error) {
               console.error("Error fetching pre-last release:", error);
             }
+            return preLastReleaseTag
           }
           
           function getOwnerAndRepo() {
@@ -87,5 +87,4 @@ jobs:
             return { owner, repo };
           }
           
-          getPreLastRelease();
-          return preLastReleaseTag
+          return getPreLastRelease();
