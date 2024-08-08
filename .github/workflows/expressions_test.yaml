@@ -65,12 +65,12 @@ jobs:
               });
           
               if (releases.length < 2) {
-                console.log("There are less than 2 releases in the repository.");
+                core.warning("There are less than 2 releases in the repository.");
                 return;
               }
           
               const preLastRelease = releases[1];
-              console.log("Pre-last release:", preLastRelease);
+              core.info("Pre-last release:", preLastRelease);
             } catch (error) {
               console.error("Error fetching pre-last release:", error);
             }
