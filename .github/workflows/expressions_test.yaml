@@ -73,6 +73,7 @@ jobs:
               if (releases.length < 2) {
                 core.warning("There are less than 2 releases in the repository.");
                 core.warning("Returning first repository commit.");
+                //This is not working as this is first commit
                 return getFirstRepositoryCommit();
               }
               preLastReleaseTag = releases[1].tag_name;
