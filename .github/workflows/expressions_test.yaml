@@ -57,6 +57,7 @@ jobs:
         result-encoding: string
         script: |
           async function getPreLastRelease() {
+            var preLastReleaseTag
             try {
               const { owner, repo } = getOwnerAndRepo();
 
@@ -73,7 +74,7 @@ jobs:
                 core.warning("There are less than 2 releases in the repository.");
                 return;
               }
-              const preLastReleaseTag = releases[1].tag_name;
+              preLastReleaseTag = releases[1].tag_name;
               core.info(`Pre-last release tag: ${preLastReleaseTag}`);
             } catch (error) {
               console.error("Error fetching pre-last release:", error);
