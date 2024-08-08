@@ -48,3 +48,42 @@ jobs:
           SUFFIX="-SNAPSHOT"
         fi
         echo ${SUFFIX}
+    - name: Get prelast release
+      uses: actions/github-script@v7
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const { Octokit } = require("@octokit/rest");
+
+          const octokit = new Octokit({
+            auth: process.env.GITHUB_TOKEN,
+          });
+          async function getPreLastRelease() {
+            try {
+              const { owner, repo } = getOwnerAndRepo();
+              const { data: releases } = await octokit.repos.listReleases({
+                owner,
+                repo,
+                per_page: 2,
+              });
+          
+              if (releases.length < 2) {
+                console.log("There are less than 2 releases in the repository.");
+                return;
+              }
+          
+              const preLastRelease = releases[1];
+              console.log("Pre-last release:", preLastRelease);
+            } catch (error) {
+              console.error("Error fetching pre-last release:", error);
+            }
+          }
+          
+          function getOwnerAndRepo() {
+            const repoUrl = process.env.GITHUB_REPOSITORY;
+            const [owner, repo] = repoUrl.split("/");
+            return { owner, repo };
+          }
