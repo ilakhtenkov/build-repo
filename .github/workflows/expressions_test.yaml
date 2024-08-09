@@ -48,3 +48,44 @@ jobs:
           SUFFIX="-SNAPSHOT"
         fi
         echo ${SUFFIX}
+    - name: Get prelast release
+      uses: actions/github-script@v7
+      env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        result-encoding: string
+        script: |
+          async function getPreLastRelease() {
+            var preLastReleaseTag
+            try {
+              const { owner, repo } = getOwnerAndRepo();
+
+              const { data: releases } = await github.request('GET /repos/{owner}/{repo}/releases', {
+                owner: owner,
+                repo: repo,
+                per_page: 2,
+                headers: {
+                  'X-GitHub-Api-Version': '2022-11-28'
+                }
+              })
+          
+              if (releases.length < 2) {
+                core.warning("There are less than 2 releases in the repository.");
+                return;
+              }
+              preLastReleaseTag = releases[1].tag_name;
+              core.info(`Pre-last release tag: ${preLastReleaseTag}`);
+            } catch (error) {
+              core.error("Error fetching pre-last release:", error);
+            }
+            return preLastReleaseTag;
+          }
+          
+          function getOwnerAndRepo() {
+            const repoUrl = process.env.GITHUB_REPOSITORY;
+            const [owner, repo] = repoUrl.split("/");
+            return { owner, repo };
+          }
+          
+          return getPreLastRelease();
