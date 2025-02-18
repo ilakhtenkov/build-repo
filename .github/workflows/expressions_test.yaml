@@ -32,6 +32,8 @@ jobs:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: |
         echo ${GITHUB_CONTEXT} | jq .
+    - name: Dump env vars
+      run: env
     - name: 'Workflow commands'
       run: |
         echo "::notice title='It is very important':: Showing context"
