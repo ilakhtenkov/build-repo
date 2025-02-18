@@ -9,6 +9,9 @@ on:
         type: boolean
         description: Is it a snapshot build
         default: true
+  pull_request:
+    branches:
+      - main
 
 env:
   env: DEV
