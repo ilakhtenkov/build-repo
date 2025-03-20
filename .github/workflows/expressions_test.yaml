@@ -53,6 +53,13 @@ jobs:
           SUFFIX="-SNAPSHOT"
         fi
         echo ${SUFFIX}
+    - name: JSON output
+      run: |
+        ARTIFACTS="{\"artifacts\":[]}"
+        ARTIFACTS=$(jq -rc --arg link "https://myregistry.com/artifact1.zip" '.artifacts +=[$link]' <<< ${ARTIFACTS})
+        ARTIFACTS=$(jq -rc --arg link "https://myregistry.com/another-artifact.zip" '.artifacts +=[$link]' <<< ${ARTIFACTS})
+        echo ${ARTIFACTS}
+        echo "artifacts=${ARTIFACTS}" >> $GITHUB_OUTPUT
     - name: Get prelast release
       uses: actions/github-script@v7
       env:
