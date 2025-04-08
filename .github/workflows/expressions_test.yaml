@@ -114,6 +114,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
     - interm
+    - main
     steps:
     - run: |
         echo "Here is the output from main job: ${{ needs.main.outputs.test }}"
