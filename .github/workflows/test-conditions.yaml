@@ -1,6 +1,4 @@
-name: GitHub Actions Capabilities test
-
-run-name: GitHub Actions Capabilities test
+name: Test conditions
 
 on:
   workflow_dispatch:
