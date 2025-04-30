@@ -52,7 +52,7 @@ jobs:
       - job1
       - job2
       - job3
-    if: $${{ always() && success() }}
+    if: ${{ always() && success() }}
     steps:
     - name: run
       run: echo "Final"
