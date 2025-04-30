@@ -1,0 +1,60 @@
+name: GitHub Actions Capabilities test
+
+run-name: GitHub Actions Capabilities test
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_job1:
+        type: boolean
+        description: Run job 1
+        default: true
+      run_job2:
+        type: boolean
+        description: Run job 2
+        default: false
+      run_job3:
+        type: boolean
+        description: Run job 3
+        default: true
+      job3_status_code:
+        type: string
+        default: "0"
+
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.run_job1 }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: |
+        echo ${GITHUB_CONTEXT} | jq .
+    - name: Dump env vars
+      run: env
+  job2:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.run_job2 }}
+    steps:
+    - name: run
+      run: echo "Running job2"
+  job3:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.run_job3 }}
+    steps:
+    - name: run
+      run: echo "Running job3" && exit ${{ inputs.job3_status_code }}
+  final:
+    runs-on: ubuntu-latest
+    needs:
+      - job1
+      - job2
+      - job3
+    if: $${{ always() && success() }}
+    steps:
+    - name: run
+      run: echo "Final"
