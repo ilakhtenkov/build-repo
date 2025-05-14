@@ -55,6 +55,7 @@ jobs:
           SUFFIX="-SNAPSHOT"
         fi
         echo ${SUFFIX}
+        echo "SUFFIX=${SUFFIX}" >> $GITHUB_ENV
     - name: JSON output
       run: |
         ARTIFACTS="{\"artifacts\":[]}"
@@ -109,7 +110,7 @@ jobs:
     needs:
     - main
     steps:
-    - run: echo "Doing something"
+    - run: echo "Doing something" && env
   job3:
     runs-on: ubuntu-latest
     needs:
