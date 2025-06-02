@@ -26,6 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       test: awesomeValue
+      mainSucceeded: ${{ job.status == 'success' }}
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -117,5 +118,10 @@ jobs:
     - interm
     - main
     steps:
+    - name: Dump needs
+      env:
+        NEEDS: ${{ toJson(needs) }}
+      run: |
+        echo ${NEEDS} | jq .
     - run: |
         echo "Here is the output from main job: ${{ needs.main.outputs.test }}"
