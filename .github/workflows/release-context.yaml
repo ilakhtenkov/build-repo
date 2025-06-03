@@ -1,0 +1,32 @@
+name: Print GitHub Release Event Context
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  print-release-context:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Print the event context provided by GitHub
+      - name: Log release event context
+        env:
+          GITHUB_EVENT_CONTEXT: ${{ toJson(github.event) }}
+        run: |
+          echo "Release event context:"
+          echo "${GITHUB_EVENT_CONTEXT}"
+
+      # Step 3 (optional): Save the context to a file (if needed for debugging)
+      - name: Save context to file
+        run: |
+          echo "${{ toJson(github.event) }}" > release-event-context.json
+          echo "Saved release event context to release-event-context.json"
+
+      # Step 4 (optional): Debug by printing the content of the saved file
+      - name: Print saved release event context
+        run: |
+          cat release-event-context.json
