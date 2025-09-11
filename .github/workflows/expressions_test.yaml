@@ -72,6 +72,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         result-encoding: string
         script: |
+          console.log(context)
           async function getPreLastRelease() {
             var preLastReleaseTag
             try {
