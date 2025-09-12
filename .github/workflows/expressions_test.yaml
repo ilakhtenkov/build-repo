@@ -76,6 +76,9 @@ jobs:
         result-encoding: string
         script: |
           console.log(context)
+          const testSet = new Set([1, 2, 3]);
+          const copyTestSet = new Set(testSet);
+          console.log(`Copy of set: ${JSON.stringify(copyTestSet)}`)
           async function getPreLastRelease() {
             var preLastReleaseTag
             try {
