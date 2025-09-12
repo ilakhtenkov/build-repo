@@ -79,8 +79,8 @@ jobs:
           console.log(context)
           const testSet = new Set([1, 2, 3]);
           const copyTestSet = new Set(testSet);
-          console.log(`Original set: ${JSON.stringify(testSet)}`)
-          console.log(`Copy of set: ${JSON.stringify(copyTestSet)}`)
+          console.log(`Original set: ${testSet}`)
+          console.log(`Copy of set: ${copyTestSet}`)
           async function getPreLastRelease() {
             var preLastReleaseTag
             try {
