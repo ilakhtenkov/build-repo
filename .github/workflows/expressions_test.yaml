@@ -75,6 +75,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         result-encoding: string
         script: |
+          console.log(`Running Node.js version: ${process.version}`);
           console.log(context)
           const testSet = new Set([1, 2, 3]);
           const copyTestSet = new Set(testSet);
