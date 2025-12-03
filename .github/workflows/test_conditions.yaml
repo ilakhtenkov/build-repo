@@ -28,7 +28,7 @@ jobs:
       - prepare-deploy
     if: |
       always()
-      && fromJSON(needs.prepare-deploy.outputs.deploy_json).applications != 'Array'
+      && fromJSON(needs.prepare-deploy.outputs.deploy_json).applications != '[]'
       && !contains(needs.*.result, 'failure')
       && !contains(needs.*.result, 'cancelled')
     outputs:
