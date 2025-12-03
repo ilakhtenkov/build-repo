@@ -1,0 +1,38 @@
+name: Test Conditions
+
+on:
+  push: {}
+
+jobs:
+  prepare-deploy:
+    runs-on: ubuntu-latest
+    outputs:
+      deploy_json: ${{ steps.prepare-deploy.outputs.deploy_json }}
+    steps:
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: |
+        echo ${GITHUB_CONTEXT} | jq .
+    - name: Dump env vars
+      run: env
+    - name: ''
+      id: prepare-deploy
+      run: |
+        echo deploy_json='{"applications": []}' > $GITHUB_OUTPUT
+  deploy:
+    runs-on: ubuntu-latest
+    needs:
+      - prepare-deploy
+    if: |
+      always()
+      && fromJSON(needs.prepare-deploy.outputs.deploy_json)['applications'] != '[]'
+      && !contains(needs.*.result, 'failed')
+      && !contains(needs.*.result, 'canceled')
+    outputs:
+      deploy_json: ${{ steps.prepare-deploy.outputs.deploy_json }}
+    steps:
+    - name: Show deployment json
+      run: |
+        echo fromJSON(needs.prepare-deploy.outputs.deploy_json)['applications']
+        
