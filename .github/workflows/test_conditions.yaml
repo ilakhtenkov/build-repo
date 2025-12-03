@@ -52,4 +52,5 @@ jobs:
     - name: Show deployment json
       run: |
         echo applications_array=${{ fromJSON(needs.prepare-deploy.outputs.deploy2_json)['applications'] }}
-        
+        echo deploy1_json=${{ fromJSON(needs.prepare-deploy.outputs.deploy1_json) }}
+        echo deploy2_json=${{ fromJSON(needs.prepare-deploy.outputs.deploy2_json) }}
