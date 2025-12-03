@@ -34,7 +34,7 @@ jobs:
     steps:
     - name: Show deployment json
       env:
-        DEPLOY_JSON: ${{ toJSON(fromJSON(needs.prepare-deploy.outputs.deploy2_json).applications) }}
+        DEPLOY_JSON: ${{ toJSON(fromJSON(needs.prepare-deploy.outputs.deploy1_json).applications) }}
       run: |
         echo ${DEPLOY_JSON}
   deploy2:
