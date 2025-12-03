@@ -28,7 +28,7 @@ jobs:
       - prepare-deploy
     if: |
       always()
-      && fromJSON(needs.prepare-deploy.outputs.deploy1_json)['applications'] != fromJSON('[]')
+      && fromJSON(needs.prepare-deploy.outputs.deploy1_json).applications
       && !contains(needs.*.result, 'failure')
       && !contains(needs.*.result, 'cancelled')
     outputs:
@@ -43,7 +43,7 @@ jobs:
       - prepare-deploy
     if: |
       always()
-      && fromJSON(needs.prepare-deploy.outputs.deploy2_json)['applications'] != fromJSON('[]')
+      && fromJSON(needs.prepare-deploy.outputs.deploy2_json).applications
       && !contains(needs.*.result, 'failure')
       && !contains(needs.*.result, 'cancelled')
     outputs:
