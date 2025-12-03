@@ -28,7 +28,7 @@ jobs:
       - prepare-deploy
     if: |
       always()
-      && fromJSON(needs.prepare-deploy.outputs.deploy_json)['applications'] != '[]'
+      && fromJSON(needs.prepare-deploy.outputs.deploy1_json)['applications'] != '[]'
       && !contains(needs.*.result, 'failure')
       && !contains(needs.*.result, 'cancelled')
     outputs:
@@ -36,14 +36,14 @@ jobs:
     steps:
     - name: Show deployment json
       run: |
-        echo applications_array=${{ fromJSON(needs.prepare-deploy.outputs.deploy_json)['applications'] }}
+        echo applications_array=${{ fromJSON(needs.prepare-deploy.outputs.deploy1_json)['applications'] }}
   deploy2:
     runs-on: ubuntu-latest
     needs:
       - prepare-deploy
     if: |
       always()
-      && fromJSON(needs.prepare-deploy.outputs.deploy_json)['applications'] != '[]'
+      && fromJSON(needs.prepare-deploy.outputs.deploy2_json)['applications'] != '[]'
       && !contains(needs.*.result, 'failure')
       && !contains(needs.*.result, 'cancelled')
     outputs:
@@ -51,5 +51,5 @@ jobs:
     steps:
     - name: Show deployment json
       run: |
-        echo applications_array=${{ fromJSON(needs.prepare-deploy.outputs.deploy_json)['applications'] }}
+        echo applications_array=${{ fromJSON(needs.prepare-deploy.outputs.deploy2_json)['applications'] }}
         
