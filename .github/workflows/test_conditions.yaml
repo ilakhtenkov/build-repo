@@ -17,11 +17,11 @@ jobs:
         echo ${GITHUB_CONTEXT} | jq .
     - name: Dump env vars
       run: env
-    - name: ''
+    - name: 'Set outputs'
       id: prepare-deploy
       run: |
-        echo deploy1_json='{"applications": []}' > $GITHUB_OUTPUT
-        echo deploy2_json='{"applications": [{"name": "app1", "image": "nginx:latest"}]}' > $GITHUB_OUTPUT
+        echo deploy1_json='{"applications": []}' >> $GITHUB_OUTPUT
+        echo deploy2_json='{"applications": [{"name": "app1", "image": "nginx:latest"}]}' >> $GITHUB_OUTPUT
   deploy1:
     runs-on: ubuntu-latest
     needs:
