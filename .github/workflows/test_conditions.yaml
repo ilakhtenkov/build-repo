@@ -26,7 +26,7 @@ jobs:
       - prepare-deploy
     if: |
       always()
-      && fromJSON(needs.prepare-deploy.outputs.deploy_json).applications | length > 0
+      && fromJSON(needs.prepare-deploy.outputs.deploy_json).applications != '[]'
       && !contains(needs.*.result, 'failed')
       && !contains(needs.*.result, 'canceled')
     outputs:
@@ -34,5 +34,5 @@ jobs:
     steps:
     - name: Show deployment json
       run: |
-        echo ${{ fromJSON(needs.prepare-deploy.outputs.deploy_json)['applications'] }}
+        echo ${{ fromJSON(needs.prepare-deploy.outputs.deploy_json).applications }}
         
