@@ -9,6 +9,7 @@ jobs:
     outputs:
       deploy1_json: ${{ steps.prepare-deploy.outputs.deploy1_json }}
       deploy2_json: ${{ steps.prepare-deploy.outputs.deploy2_json }}
+      deploy3_json: ${{ steps.prepare-deploy.outputs.deploy3_json }}
     steps:
     - name: Dump GitHub context
       env:
@@ -22,6 +23,7 @@ jobs:
       run: |
         echo deploy1_json='{"applications": []}' >> $GITHUB_OUTPUT
         echo deploy2_json='{"applications": [{"name": "app1", "image": "nginx:latest"}]}' >> $GITHUB_OUTPUT
+        echo deploy3_json='{}' >> $GITHUB_OUTPUT
   deploy1:
     runs-on: ubuntu-latest
     needs:
@@ -50,5 +52,20 @@ jobs:
     - name: Show deployment json
       env:
         DEPLOY_JSON: ${{ toJSON(fromJSON(needs.prepare-deploy.outputs.deploy2_json).applications) }}
+      run: |
+        echo ${DEPLOY_JSON}
+  deploy3:
+    runs-on: ubuntu-latest
+    needs:
+      - prepare-deploy
+    if: |
+      always()
+      && needs.prepare-deploy.outputs.deploy3_json != '{}'
+      && !contains(needs.*.result, 'failure')
+      && !contains(needs.*.result, 'cancelled')
+    steps:
+    - name: Show deployment json
+      env:
+        DEPLOY_JSON: ${{ needs.prepare-deploy.outputs.deploy3_json }}
       run: |
         echo ${DEPLOY_JSON}
