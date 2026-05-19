@@ -10,7 +10,7 @@ on:
       environment:
         type: environment
         required: true
-        description: ENV to deploy
+        description: ENV to deploy test
 
 jobs:
   deploy:
